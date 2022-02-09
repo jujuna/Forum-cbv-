@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+        <p>Welcome {{ user.username }} !!!</p>
+        <li><a href="{% url 'User:logout' %}">გამოსვლა</a></li>
+{% endif %}
+<h1 class="font-semibold text-fuchsia-300 text-5xl italic flex flex-col justify-center items-center pt-24">ფორუმი</h1>
+<div class="h-3/6">
+    <div class="flex w-9/12 mt-40 ml-48">
+        <div class="w-1/2 hover:drop-shadow-lg drop-shadow-md rounded-lg ">
+            <img src="{% static 'images/cover.png' %}" alt="My image" class="rounded-md"/>
+        </div>
+        <div class="w-1/2 ml-2 bg-red-300 hover:drop-shadow-lg drop-shadow-md rounded-md">
+            <div class="test">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block style %}
+<style>
+    body{
+    background: #CB356B;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #BD3F32, #CB356B);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #BD3F32, #CB356B); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */}
+</style>
+{% endblock %}

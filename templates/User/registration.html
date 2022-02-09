@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-blue-100 w-4/12 relative inset-x-1/3 top-42">
+<form class="w-full max-w-md pl-16 mt-4 pt-4" method="POST" novalidate>
+    {% csrf_token %}
+    <div class="flex flex-wrap -mx-1 mb-6">
+      {% for field in form %}
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+      <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+          {{ field.label }}
+
+      </label>
+        {{field}}
+      <p class="text-red-500 text-xs italic pb-4">
+          {% if field.errors %}
+            {{field.errors|striptags}}
+          {% endif %}
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+    <button type="submit" class="mb-4 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">რეგისტრაცია</button>
+    <a class="pl-4 text-indigo-500 hover:text-indigo-600 text-sm" href="{% url 'User:home' %}">მთავარ გვერდზე დაბრუნება</a>
+</form>
+</div>
+{% endblock %}
+{% block style %}
+<style>
+    body{
+    background: #CB356B;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #BD3F32, #CB356B);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #BD3F32, #CB356B); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */}
+</style>
+{% endblock %}
