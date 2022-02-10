@@ -69,6 +69,7 @@ class AuthenticationForm(AuthenticationForm):
             "პაროლი ან მაილი არასწორია"
         ),
     }
+
     def __init__(self, *args, **kwargs):
         super(AuthenticationForm, self).__init__(*args, **kwargs)
 

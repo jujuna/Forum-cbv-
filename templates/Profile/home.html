@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+{% if user.is_authenticated %}
+        <p>Welcome {{ user.username }} !!!</p>
+        <li><a href="{% url 'User:logout' %}">გამოსვლა</a></li>
+{% endif %}
+
+<h1>login</h1>
+{% endblock %}

@@ -2,19 +2,32 @@ from django.views.generic import TemplateView,FormView
 from .forms import UserForm,AuthenticationForm
 from django.urls import reverse_lazy
 from django.contrib.auth import login,authenticate,logout
-from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.conf import settings
 from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
+
+
+
 
 class HomePage(TemplateView):
     template_name = "user/home.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('Profile:home')
+        return super(HomePage, self).get(request, *args, **kwargs)
 
 
 class Registration(FormView):
     form_class = UserForm
     template_name = "user/registration.html"
     success_url = reverse_lazy("User:home")
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('Profile:home')
+        return super(Registration, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.save(commit=True)
@@ -25,6 +38,7 @@ class Login(FormView):
     form_class = AuthenticationForm
     success_url = reverse_lazy("User:home")
     template_name = "user/login.html"
+    success_url = reverse_lazy("Profile:home")
 
     def form_valid(self, form):
         email = self.request.POST.get("username","")
@@ -37,6 +51,11 @@ class Login(FormView):
     def form_invalid(self, form):
         print(form.errors)
         return super(Login, self).form_invalid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('Profile:home')
+        return super(Login, self).dispatch(request, *args, **kwargs)
 
 
 class Logout(View):
