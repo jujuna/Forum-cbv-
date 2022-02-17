@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import Category,Question
+from .models import Category,Question,Comment
 
-admin.site.register([Category,Question])
+admin.site.register([Category,Question,Comment])
