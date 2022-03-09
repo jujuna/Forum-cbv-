@@ -2,37 +2,141 @@
 {% block content %}
 {% include "./navbar.html" %}
 
-<div class="relative left-80 pt-6">
-<div class="">
+<div class="relative pt-6  w-7/12 left-80 ">
+<div class="post">
+        <div class="p-6 mb-12 w-full h-auto break-all bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 border border-gray-400">
+            <div class="mb-2 flex ">
+                {% for a in detail.category.all %}
+                <p class="mr-2 text-sm text-blue-500">#{{ a.name }}</p>
+                {% endfor %}
+            </div>
+            <form class="float-right block" id="ld" action="{% url 'Profile:question-detail' pk=detail.id %}">
+                <div class="vote circle">
+                    {% if like_ex %}
+                        <button type="submit"  name="like"  class="block mb-2 increment up border-4 border-blue-800"></button>
+                    {% else %}
+                        <button type="submit"  name="like" class="block mb-2 increment up "></button>
+                    {% endif %}
 
-        <div class="p-6 mb-12 w-7/12 h-auto break-all bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-        <div class="mb-2 flex ">
-        {% for a in detail.category.all %}
-        <p class="mr-2 text-sm text-blue-500">#{{ a.name }}</p>
-        {% endfor %}
-    </div>
-    <a href="#">
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ detail.title }}</h5>
-    </a>
-    <p class="mb-4 font-normal text-gray-700 dark:text-gray-400">{{ detail.text }}</p>
+                    {% if dislike_ex %}
+                        <button type="submit"  name="dislike" class="block mb-2 increment down border-4 border-blue-800"></button>
+                    {% else %}
+                        <button type="submit"  name="dislike" class="block mb-2 increment down "></button>
+                    {% endif %}
+                    <div class="count">{{ detail.point }}</div>
+                </div>
+            </form>
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ detail.title }}</h5>
+            <p class="mb-4 font-normal text-gray-700 dark:text-gray-400">{{ detail.text }}</p>
+        </div>
 
-    <a href="#" class="inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-    წაიკითხე მეტი
-    <svg class="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-    </a>
 </div>
 
+    <div class="w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+
+   <form class="bg-white rounded-lg px-4 pt-2" method="post" id="comment" novalidate>
+       {% csrf_token %}
+      <div class="flex flex-wrap -mx-3 mb-6">
+          {% for field in form %}
+                {% if field.errors %}
+                    <div class="ml-3 my-2 bg-red-200 border border-red-200 text-red-700 px-2 py-2 rounded relative">
+                        <ul class="">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+          {% endfor %}
+         <div class="w-full md:w-full px-3 mb-2 mt-2">
+             {% for field in form %}
+             {{field}}
+             {% endfor %}
+         </div>
+
+         <div class="w-full md:w-full flex items-start md:w-full px-3">
+            <div class="-mr-1">
+               <a href="{% url Profile:question_detail detail.id "><input type='submit'  name="comment" class="bg-white text-gray-700 font-medium py-1 px-4 border border-gray-400 rounded-lg tracking-wide mr-1 hover:bg-gray-100 cursor-pointer" value='დაკომენტარება'></a>
+            </div>
+         </div>
+      </form>
+   </div>
 </div>
-<div class="w-7/12 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-<form method="POST" >
-    {% csrf_token %}
-    {% for field in form %}
-    {{field}}
+    <div class="comments">
+    {% for a in detail.question.all %}
+        <div class="w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 mt-8 mb-4 h-auto break-all p-4 border border-gray-400">
+            <div>
+               <p class="text-indigo-700 text-xl"> {{a.user}}</p>
+            </div>
+            <p class="fond-medium">{{a.text}}</p>
+        </div>
+
     {% endfor %}
-    <input type="image" class="relative float-right mr-16 mt-6 w-8 h-8" src="https://img.icons8.com/external-kmg-design-outline-color-kmg-design/32/000000/external-send-arrow-kmg-design-outline-color-kmg-design.png"/>
-</form>
-</div>
-</div>
+    </div>
 
+<style>
+.circle .up {
+  border-radius: 10rem 10rem 0 0;
+}
+.circle .down {
+  border-radius: 0 0 10rem 10rem;
+
+}
+.circle .count {
+  border-radius: 50%;
+}
+.vote {
+  display: flex;
+  flex-direction: column;
+  font-family: "Noto Sans";
+  position: relative;
+  width: 7rem;
+  height: 7rem;
+  bottom:20px;
+}
+
+.increment {
+  flex: 1 0 0;
+  text-align: center;
+  opacity: 0.5;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.increment.up {
+  background: #4BC35F;
+  height: 50%;
+  margin-bottom: 0.25rem;
+}
+.increment.down {
+  background: #C15044;
+  height: 50%;
+
+}
+.increment:hover {
+  opacity: 1;
+}
+
+.count {
+  position: absolute;
+  top: 0;
+  border-radius: 0.1rem;
+  margin: 2rem;
+  background: #F6F3E4;
+  width: 3rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+  line-height: 2.7rem;
+  text-align: center;
+  box-shadow: 0 0 0 0.5rem #F6F3E4;
+  pointer-events: none;
+}
+.count.upvoted {
+  color: #4BC35F;
+}
+.count.downvoted {
+  color: #C15044;
+}
+</style>
 
 {% endblock %}

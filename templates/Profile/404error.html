@@ -1,112 +1,143 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-<svg width="380px" height="500px" viewBox="0 0 837 1045" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <path d="M353,9 L626.664028,170 L626.664028,487 L353,642 L79.3359724,487 L79.3359724,170 L353,9 Z" id="Polygon-1" stroke="#007FB2" stroke-width="6" sketch:type="MSShapeGroup"></path>
-        <path d="M78.5,529 L147,569.186414 L147,648.311216 L78.5,687 L10,648.311216 L10,569.186414 L78.5,529 Z" id="Polygon-2" stroke="#EF4A5B" stroke-width="6" sketch:type="MSShapeGroup"></path>
-        <path d="M773,186 L827,217.538705 L827,279.636651 L773,310 L719,279.636651 L719,217.538705 L773,186 Z" id="Polygon-3" stroke="#795D9C" stroke-width="6" sketch:type="MSShapeGroup"></path>
-        <path d="M639,529 L773,607.846761 L773,763.091627 L639,839 L505,763.091627 L505,607.846761 L639,529 Z" id="Polygon-4" stroke="#F2773F" stroke-width="6" sketch:type="MSShapeGroup"></path>
-        <path d="M281,801 L383,861.025276 L383,979.21169 L281,1037 L179,979.21169 L179,861.025276 L281,801 Z" id="Polygon-5" stroke="#36B455" stroke-width="6" sketch:type="MSShapeGroup"></path>
-    </g>
-</svg>
-<div class="message-box">
-  <h1>404</h1>
-  <p>Page not found</p>
-  <div class="buttons-con">
-    <div class="action-link-wrap">
-      <a onclick="history.back(-1)" class="link-button link-back-button">Go Back</a>
-      <a href="" class="link-button">Go to Home Page</a>
-    </div>
-  </div>
+<div class="mars"></div>
+<img src="https://assets.codepen.io/1538474/404.svg" class="logo-404" />
+<img src="https://assets.codepen.io/1538474/meteor.svg" class="meteor" />
+<p class="title">სხვაგან მოხვდი</p>
+</br>
+<p class="subtitle">
+	ეს კითხვა წაშლილი არის ან არასწორ მისამართზე ხარ
+</p>
+<div align="center">
+	<a class="btn-back cursor-pointer" onclick="history.back()">დაბრუნდი უკან</a>
 </div>
+<img src="https://assets.codepen.io/1538474/astronaut.svg" class="astronaut" />
+<img src="https://assets.codepen.io/1538474/spaceship.svg" class="spaceship" />
 
-{% endblock %}
+<style>
+	@import url("https://fonts.googleapis.com/css?family=Nunito:400,600,700");
+@keyframes floating {
+  from {
+    transform: translateY(0px);
+  }
+  65% {
+    transform: translateY(15px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+html {
+  height: 100%;
+}
 
-{% block style %}
 body {
-  background-color: #2F3242;
+  background-image: url("https://assets.codepen.io/1538474/star.svg"), linear-gradient(to bottom, #05007a, #4d007d);
+  height: 100%;
+  margin: 0;
+  background-attachment: fixed;
+  overflow: hidden;
 }
-svg {
+
+.mars {
+  left: 0;
+  right: 0;
+  bottom: 0;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -250px;
-  margin-left: -400px;
+  height: 27vmin;
+  background: url("https://assets.codepen.io/1538474/mars.svg") no-repeat bottom center;
+  background-size: cover;
 }
-.message-box {
-  height: 200px;
-  width: 380px;
+
+.logo-404 {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -100px;
-  margin-left: 50px;
-  color: #FFF;
-  font-family: Roboto;
-  font-weight: 300;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  top: 16vmin;
+  width: 30vmin;
 }
-.message-box h1 {
-  font-size: 60px;
-  line-height: 46px;
-  margin-bottom: 40px;
+@media (max-width: 480px) and (min-width: 320px) {
+  .logo-404 {
+    top: 45vmin;
+  }
 }
-.buttons-con .action-link-wrap {
-  margin-top: 40px;
+
+.meteor {
+  position: absolute;
+  right: 2vmin;
+  top: 16vmin;
 }
-.buttons-con .action-link-wrap a {
-  background: #68c950;
-  padding: 8px 25px;
-  border-radius: 4px;
-  color: #FFF;
-  font-weight: bold;
-  font-size: 14px;
-  transition: all 0.3s linear;
-  cursor: pointer;
+
+.title {
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-weight: 600;
+  text-align: center;
+  font-size: 5vmin;
+  margin-top: 31vmin;
+}
+@media (max-width: 480px) and (min-width: 320px) {
+  .title {
+    margin-top: 65vmin;
+  }
+}
+
+.subtitle {
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-weight: 400;
+  text-align: center;
+  font-size: 3.5vmin;
+  margin-top: -1vmin;
+  margin-bottom: 9vmin;
+}
+
+.btn-back {
+  border: 1px solid white;
+  color: white;
+  height: 5vmin;
+  padding: 12px;
+  font-family: "Nunito", sans-serif;
   text-decoration: none;
-  margin-right: 10px
+  border-radius: 5px;
 }
-.buttons-con .action-link-wrap a:hover {
-  background: #5A5C6C;
-  color: #fff;
+.btn-back:hover {
+  background: white;
+  color: #4d007d;
+}
+@media (max-width: 480px) and (min-width: 320px) {
+  .btn-back {
+    font-size: 3.5vmin;
+  }
 }
 
-#Polygon-1 , #Polygon-2 , #Polygon-3 , #Polygon-4 , #Polygon-4, #Polygon-5 {
-  animation: float 1s infinite ease-in-out alternate;
+.astronaut {
+  position: absolute;
+  top: 18vmin;
+  left: 10vmin;
+  height: 30vmin;
+  animation: floating 3s infinite ease-in-out;
 }
-#Polygon-2 {
-  animation-delay: .2s;
-}
-#Polygon-3 {
-  animation-delay: .4s;
-}
-#Polygon-4 {
-  animation-delay: .6s;
-}
-#Polygon-5 {
-  animation-delay: .8s;
+@media (max-width: 480px) and (min-width: 320px) {
+  .astronaut {
+    top: 2vmin;
+  }
 }
 
-@keyframes float {
-	100% {
-    transform: translateY(20px);
+.spaceship {
+  position: absolute;
+  bottom: 15vmin;
+  right: 24vmin;
+}
+@media (max-width: 480px) and (min-width: 320px) {
+  .spaceship {
+    width: 45vmin;
+    bottom: 18vmin;
   }
 }
-@media (max-width: 450px) {
-  svg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -250px;
-    margin-left: -190px;
-  }
-  .message-box {
-    top: 50%;
-    left: 50%;
-    margin-top: -100px;
-    margin-left: -190px;
-    text-align: center;
-  }
-}
+</style>
+
 {% endblock %}

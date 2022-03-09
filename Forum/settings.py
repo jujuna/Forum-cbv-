@@ -28,9 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -140,6 +137,5 @@ STATICFILES_DIRS = (
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGOUT_REDIRECT_URL='User:home'
-# LOGIN_REDIRECT_URL = 'ecommerce:home'
 LOGIN_URL = 'User:login'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
