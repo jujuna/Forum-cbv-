@@ -12,9 +12,8 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 
-
 class ProfileHome(ListView):
-    template_name = "profile/home.html"
+    template_name = "Profile/home.html"
     model = Question
     context_object_name = "question"
 
@@ -22,6 +21,7 @@ class ProfileHome(ListView):
 class QuestionDetail(FormView, DetailView):
     model = Question
     form_class = CommentForm
+    template_name = "Profile/question_detail.html"
     context_object_name = "detail"
 
     def dispatch(self, request, *args, **kwargs):
@@ -31,7 +31,7 @@ class QuestionDetail(FormView, DetailView):
             return redirect('Profile:error')
 
         self.get_object()
-        return super(QuestionDetail, self).get(request, *args, **kwargs)
+        return self.post(request, *args, **kwargs)
 
     def get_success_url(self):
         return self.request.path
@@ -44,37 +44,38 @@ class QuestionDetail(FormView, DetailView):
         try:
             question = Question.objects.get(id=self.kwargs["pk"])
             context['detail'] = question
-            context['like_ex']=like_exist
-            context['dislike_ex']=dislike_exist
+            context['like_ex'] = like_exist
+            context['dislike_ex'] = dislike_exist
         except Http404:
             return reverse("Profile:error")
 
         if "like" or "dislike" in self.request.GET:
 
+            like = Like.objects.filter(user=self.request.user, question=self.get_object())
+            dislike = DisLike.objects.filter(user=self.request.user, question=self.get_object())
+
             if "like" in self.request.GET:
 
-                    if Like.objects.filter(user=self.request.user, question=self.get_object()):
-                        Like.objects.filter(user=self.request.user, question=self.get_object()).delete()
+                    if like:
+                        like.delete()
+                    elif dislike:
+                        Like.objects.create(user=self.request.user, question=self.get_object(), decrease=True)
+                        DisLike.objects.filter(user=self.request.user, question=self.get_object()).delete()
                     else:
-                        Like.objects.create(user=self.request.user, question=self.get_object())
-                        if DisLike.objects.filter(user=self.request.user, question=self.get_object()):
-                            DisLike.objects.filter(user=self.request.user, question=self.get_object()).delete()
+                        Like.objects.create(user=self.request.user, question=self.get_object(),decrease=False)
 
             if "dislike" in self.request.GET:
 
-                    if DisLike.objects.filter(user=self.request.user, question=self.get_object()).exists():
-                        DisLike.objects.filter(user=self.request.user, question=self.get_object()).delete()
+                    if dislike:
+                        dislike.delete()
+                    elif like:
+                        DisLike.objects.create(user=self.request.user, question=self.get_object(), decrease=True)
+                        Like.objects.filter(user=self.request.user, question=self.get_object()).delete()
                     else:
-                        DisLike.objects.create(user=self.request.user, question=self.get_object())
-                        if Like.objects.filter(user=self.request.user, question=self.get_object()).exists():
-                            Like.objects.filter(user=self.request.user, question=self.get_object()).delete()
-            return redirect(reverse("Profile:home"))
+                        DisLike.objects.create(user=self.request.user, question=self.get_object(),decrease=False)
 
         return context
 
-
-
-    
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.question = self.get_object()
@@ -82,7 +83,5 @@ class QuestionDetail(FormView, DetailView):
         return super(QuestionDetail, self).form_valid(form)
 
 
-
-
 class ERROR_404_VIEW(TemplateView):
-    template_name = "profile/404error.html"
+    template_name = "Profile/404error.html"

@@ -5,7 +5,25 @@ from django.urls import reverse
 from django.db.models.signals import pre_delete,post_delete
 from django.dispatch import receiver
 
-User=get_user_model()
+User = get_user_model()
+
+
+class LikeManager(models.Manager):
+
+    def create(self, *args, **kwargs):
+        decrease = kwargs.pop("decrease")
+        new_like = self.model(**kwargs)
+        new_like.save(decrease=decrease)
+        return new_like
+
+
+class DislikeManager(models.Manager):
+
+    def create(self, *args, **kwargs):
+        decrease = kwargs.pop("decrease")
+        new_like = self.model(**kwargs)
+        new_like.save(decrease=decrease)
+        return new_like
 
 
 class Category(models.Model):
@@ -33,10 +51,16 @@ class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("მომხმარებელი"))
     question = models.ForeignKey(Question,on_delete=models.CASCADE,verbose_name=_("კითხვა"))
 
-    def save(self, *args, **kwargs):
+    objects = LikeManager()
+
+    def save(self, decrease, *args, **kwargs):
         if not self.pk:
-            self.question.point += 1
-            self.question.save()
+            if decrease:
+                self.question.save()
+            else:
+                self.question.point += 1
+                self.question.save()
+
         return super(Like, self).save(*args, **kwargs)
 
 
@@ -45,19 +69,25 @@ def delete_like(sender, instance, using, **kwargs):
     instance.question.point -= 1
     instance.question.save()
 
+
 class DisLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("მომხმარებელი"))
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name=_("კითხვა"))
 
-    def save(self, *args, **kwargs):
+    objects = LikeManager()
+
+    def save(self, decrease, *args, **kwargs):
         if not self.pk:
-            self.question.point -= 1
-            self.question.save()
+            if decrease:
+                self.question.save()
+            else:
+                self.question.point -= 1
+                self.question.save()
         return super(DisLike, self).save(*args, **kwargs)
 
 
 @receiver(post_delete, sender=DisLike)
-def delete_like(sender, instance, using, **kwargs):
+def delete_dislike(sender, instance, using, **kwargs):
     instance.question.point += 1
     instance.question.save()
 
