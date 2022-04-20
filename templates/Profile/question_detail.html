@@ -3,8 +3,12 @@
 {% include "./navbar.html" %}
 
 <div class="relative pt-6  w-7/12 left-80 ">
-<div class="post">
+    <div class="post">
         <div class="p-6 mb-12 w-full h-auto break-all bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 border border-gray-400">
+
+            <div class="mb-4">
+                <h1>{{ detail.user }}</h1>
+            </div>
             <div class="mb-2 flex ">
                 {% for a in detail.category.all %}
                 <p class="mr-2 text-sm text-blue-500">#{{ a.name }}</p>
@@ -13,15 +17,16 @@
             <form class="float-right block" id="ld" action="{% url 'Profile:question-detail' pk=detail.id %}">
                 <div class="vote circle">
                     {% if like_ex %}
-                        <button type="submit"  name="like"  class="block mb-2 increment up border-4 border-blue-800"></button>
+                    <button type="submit" name="like" class="block mb-2 increment up border-4 border-blue-800"></button>
                     {% else %}
-                        <button type="submit"  name="like" class="block mb-2 increment up "></button>
+                    <button type="submit" name="like" class="block mb-2 increment up "></button>
                     {% endif %}
 
                     {% if dislike_ex %}
-                        <button type="submit"  name="dislike" class="block mb-2 increment down border-4 border-blue-800"></button>
+                    <button type="submit" name="dislike"
+                            class="block mb-2 increment down border-4 border-blue-800"></button>
                     {% else %}
-                        <button type="submit"  name="dislike" class="block mb-2 increment down "></button>
+                    <button type="submit" name="dislike" class="block mb-2 increment down "></button>
                     {% endif %}
                     <div class="count">{{ detail.point }}</div>
                 </div>
@@ -30,50 +35,66 @@
             <p class="mb-4 font-normal text-gray-700 dark:text-gray-400">{{ detail.text }}</p>
         </div>
 
-</div>
+        {% if owner %}
+
+        <div class="relative bottom-8">
+            <a href="{% url 'Profile:update-question' object.id %}">
+                <button class="relative inline-flex p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
+                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                            განახლება
+                        </span>
+                </button>
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+
 
     <div class="w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
 
-   <form class="bg-white rounded-lg px-4 pt-2" method="post" id="comment" novalidate>
-       {% csrf_token %}
-      <div class="flex flex-wrap -mx-3 mb-6">
-          {% for field in form %}
+        <form class="bg-white rounded-lg px-4 pt-2" method="post" id="comment" novalidate>
+            {% csrf_token %}
+            <div class="flex flex-wrap -mx-3 mb-6">
+                {% for field in form %}
                 {% if field.errors %}
-                    <div class="ml-3 my-2 bg-red-200 border border-red-200 text-red-700 px-2 py-2 rounded relative">
-                        <ul class="">
-                            {% for error in field.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                <div class="ml-3 my-2 bg-red-200 border border-red-200 text-red-700 px-2 py-2 rounded relative">
+                    <ul class="">
+                        {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
                 {% endif %}
 
-          {% endfor %}
-         <div class="w-full md:w-full px-3 mb-2 mt-2">
-             {% for field in form %}
-             {{field}}
-             {% endfor %}
-         </div>
+                {% endfor %}
+                <div class="w-full md:w-full px-3 mb-2 mt-2">
+                    {% for field in form %}
+                    {{field}}
+                    {% endfor %}
+                </div>
 
-         <div class="w-full md:w-full flex items-start md:w-full px-3">
-            <div class="-mr-1">
-               <a href="{% url Profile:question_detail detail.id "><input type='submit'  name="comment" class="bg-white text-gray-700 font-medium py-1 px-4 border border-gray-400 rounded-lg tracking-wide mr-1 hover:bg-gray-100 cursor-pointer" value='დაკომენტარება'></a>
-            </div>
-         </div>
-      </form>
-   </div>
+                <div class="w-full md:w-full flex items-start md:w-full px-3">
+                    <div class="-mr-1">
+                        <a href="{ url Profile:question_detail detail.id }"><input type='submit' name="comment"
+                                                                                   class="bg-white text-gray-700 font-medium py-1 px-4 border border-gray-400 rounded-lg tracking-wide mr-1 hover:bg-gray-100 cursor-pointer"
+                                                                                   value='დაკომენტარება'></a>
+                    </div>
+                </div>
+        </form>
+    </div>
 </div>
-    <div class="comments">
+<div class="comments">
     {% for a in detail.question.all %}
-        <div class="w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 mt-8 mb-4 h-auto break-all p-4 border border-gray-400">
-            <div>
-               <p class="text-indigo-700 text-xl"> {{a.user}}</p>
-            </div>
-            <p class="fond-medium">{{a.text}}</p>
+    <div class="w-full bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 mt-8 mb-4 h-auto break-all p-4 border border-gray-400">
+        <div>
+            <p class="text-indigo-700 text-xl"> {{a.user}}</p>
         </div>
+        <p class="fond-medium">{{a.text}}</p>
+    </div>
 
     {% endfor %}
-    </div>
+</div>
 
 <style>
 .circle .up {
@@ -137,6 +158,8 @@
 .count.downvoted {
   color: #C15044;
 }
+
+
 </style>
 
 {% endblock %}

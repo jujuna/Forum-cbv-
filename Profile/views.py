@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView,FormView,ListView,DetailView
+from django.views.generic import TemplateView,FormView,ListView,DetailView,UpdateView
 from .models import Question,Comment,Like,DisLike
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect,reverse
@@ -10,12 +10,33 @@ from User.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.db.models import Count, F
 
 
 class ProfileHome(ListView):
     template_name = "Profile/home.html"
     model = Question
     context_object_name = "question"
+
+    def get_queryset(self):
+        return Question.objects.exclude(user=self.request.user)
+
+
+class MyQuestions(ListView):
+    template_name = "Profile/my_questions.html"
+    model = Question
+    context_object_name = "question"
+
+    def get_queryset(self):
+        return Question.objects.filter(user=self.request.user)
+
+class TopQuestion(ListView):
+    template_name = "Profile/top_question.html"
+    model = Question
+    context_object_name = "question"
+
+    def get_queryset(self):
+        return Question.objects.all().annotate(top_q=F('point')).order_by('-top_q')
 
 
 class QuestionDetail(FormView, DetailView):
@@ -37,12 +58,14 @@ class QuestionDetail(FormView, DetailView):
         return self.request.path
 
     def get_context_data(self, *args, **kwargs):
-        like_exist=bool(Like.objects.filter(user=self.request.user, question=self.get_object()))
-        dislike_exist=bool(DisLike.objects.filter(user=self.request.user, question=self.get_object()))
+        like_exist=Like.objects.filter(user=self.request.user, question=self.get_object())
+        dislike_exist=DisLike.objects.filter(user=self.request.user, question=self.get_object())
+
         self.object=self.get_object()
         context = super(QuestionDetail, self).get_context_data(**kwargs)
         try:
             question = Question.objects.get(id=self.kwargs["pk"])
+            context['owner'] = True if question.user == self.request.user else False
             context['detail'] = question
             context['like_ex'] = like_exist
             context['dislike_ex'] = dislike_exist
@@ -99,7 +122,12 @@ class AskQuestion(FormView):
         self.pk = form.instance.id
         return super(AskQuestion, self).form_valid(form)
 
-
+class UpdateQuestion(UpdateView):
+    model = Question
+    form_class = QuestionForm
+    context_object_name = "form"
+    template_name = "Profile/edit_question.html"
+    success_url = "/"
 
 class ERROR_404_VIEW(TemplateView):
     template_name = "Profile/404error.html"
