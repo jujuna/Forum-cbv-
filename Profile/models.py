@@ -39,6 +39,17 @@ class Question(models.Model):
     category = models.ManyToManyField(Category, related_name="categories",verbose_name=_("კატეგორია"))
     user = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name=_("მომხმარებელი"),related_name="user")
     point = models.IntegerField(default=0)
+    can_update = models.IntegerField(default=2)
+
+    def question_update_limit(self):
+        self.can_update -= 1
+        self.save()
+        return self.can_update
+
+    def update_access(self):
+        result = False if self.can_update == 0 else True
+        return result
+
 
     def get_absolute_url(self):
         return reverse('Profile:question-detail', kwargs={'pk': self.pk})

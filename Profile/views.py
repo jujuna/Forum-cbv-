@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.db.models import Count, F
+from django.contrib import messages
 
 
 class ProfileHome(ListView):
@@ -58,14 +59,16 @@ class QuestionDetail(FormView, DetailView):
         return self.request.path
 
     def get_context_data(self, *args, **kwargs):
+        # print(Question.test(self))
+        question = Question.objects.get(id=self.kwargs["pk"])
         like_exist=Like.objects.filter(user=self.request.user, question=self.get_object())
         dislike_exist=DisLike.objects.filter(user=self.request.user, question=self.get_object())
 
         self.object=self.get_object()
         context = super(QuestionDetail, self).get_context_data(**kwargs)
         try:
-            question = Question.objects.get(id=self.kwargs["pk"])
             context['owner'] = True if question.user == self.request.user else False
+            context['can_update'] = question.update_access()
             context['detail'] = question
             context['like_ex'] = like_exist
             context['dislike_ex'] = dislike_exist
@@ -128,6 +131,11 @@ class UpdateQuestion(UpdateView):
     context_object_name = "form"
     template_name = "Profile/edit_question.html"
     success_url = "/"
+
+    def form_valid(self, form):
+        form.instance.question_update_limit()
+        return super(UpdateQuestion, self).form_valid(form)
+
 
 class ERROR_404_VIEW(TemplateView):
     template_name = "Profile/404error.html"

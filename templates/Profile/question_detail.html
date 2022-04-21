@@ -5,7 +5,6 @@
 <div class="relative pt-6  w-7/12 left-80 ">
     <div class="post">
         <div class="p-6 mb-12 w-full h-auto break-all bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 border border-gray-400">
-
             <div class="mb-4">
                 <h1>{{ detail.user }}</h1>
             </div>
@@ -35,17 +34,29 @@
             <p class="mb-4 font-normal text-gray-700 dark:text-gray-400">{{ detail.text }}</p>
         </div>
 
-        {% if owner %}
 
+        {% if can_update %}
+            {% if owner %}
+            <div class="relative bottom-8">
+                <a href="{% url 'Profile:update-question' object.id %}">
+                    <button class="relative inline-flex p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
+                            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                განახლება
+                            </span>
+                    </button>
+                </a>
+            </div>
+            {% endif %}
+
+        {% else %}
         <div class="relative bottom-8">
-            <a href="{% url 'Profile:update-question' object.id %}">
-                <button class="relative inline-flex p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
-                        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                            განახლება
-                        </span>
-                </button>
-            </a>
+             <button class="relative inline-flex p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
+                    <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                        განახლების ლიმიტი ამოწურული გაქვს
+                    </span>
+             </button>
         </div>
+
         {% endif %}
 
     </div>
