@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "./navbar.html" %}
+<div class="ml-64 mt-12 w-2/3 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+    <form method="post" id="question" novalidate>
+        {% csrf_token %}
+        <div class="w-full md:w-full px-3 mb-2 mt-2">
+            <div class="errors">
+                {% for field in form %}
+                    {% if field.errors %}
+                        <div class=" my-2 bg-red-200 border border-red-200 text-red-700 px-2 py-2 rounded relative">
+                            <ul class="">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+             {% for field in form %}
+                {{field}}
+             {% endfor %}
+         </div>
+        {% if access %}
+            <a href="{% url Profile:home"><input type='submit'  name="comment" class="bg-white text-gray-700 font-medium py-1 px-4 ml-4 mb-4 border border-gray-400 rounded-lg tracking-wide hover:bg-indigo-400 cursor-pointer" value='დაპოსტვა'></a>
+        {% else %}
+            <h1 class="p-5 text-red-500">პროფილის განახლების ლიმიტი ამოწურული გაქვს!</h1>
+        {% endif %}
+    </form>
+
+</div>
+{% endblock %}

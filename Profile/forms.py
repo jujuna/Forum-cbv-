@@ -2,6 +2,7 @@ from django import forms
 from .models import Comment, Question
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from  User.models import User
 
 
 class CommentForm(forms.ModelForm):
@@ -37,3 +38,19 @@ class QuestionForm(forms.ModelForm):
         fields = ["title", "text", "category"]
 
 
+class UpdateProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UpdateProfileForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        self.fields['username'].widget.attrs.update({'class': 'bg-gray-100 rounded border border-gray-400 leading-normal resize-none w-full h-12 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white mb-4 text-center'})
+        self.fields['email'].widget.attrs.update({'class': 'bg-gray-100 rounded border border-gray-400 leading-normal resize-none w-full h-12 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white mb-4 text-center'})
+        self.fields['mobile'].widget.attrs.update({'class': 'bg-gray-100 rounded border border-gray-400 leading-normal resize-none w-full h-12 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white mb-4 text-center'})
+        print(instance.update_access())
+        if not instance.update_access():
+            self.fields['username'].disabled = True
+            self.fields['email'].disabled = True
+            self.fields['mobile'].disabled = True
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "mobile"]

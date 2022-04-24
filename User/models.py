@@ -39,6 +39,16 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=30, verbose_name=_("სახელი"))
     last_name = models.CharField(max_length=50, verbose_name=_("გვარი"))
     mobile = models.CharField(max_length=9, verbose_name=_("მობილური"))
+    can_update = models.IntegerField(default=1)
+
+    def profile_update_limit(self):
+        self.can_update -= 1
+        self.save()
+        return self.can_update
+
+    def update_access(self):
+        result = False if self.can_update == 0 else True
+        return result
 
     objects = UserManager()
     USERNAME_FIELD = 'email'

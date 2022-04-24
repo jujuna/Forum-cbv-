@@ -39,6 +39,8 @@ class Question(models.Model):
     category = models.ManyToManyField(Category, related_name="categories",verbose_name=_("კატეგორია"))
     user = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name=_("მომხმარებელი"),related_name="user")
     point = models.IntegerField(default=0)
+    added_time = models.DateTimeField(auto_now_add=True)
+    added_time.editable = True
     can_update = models.IntegerField(default=2)
 
     def question_update_limit(self):
@@ -50,7 +52,6 @@ class Question(models.Model):
         result = False if self.can_update == 0 else True
         return result
 
-
     def get_absolute_url(self):
         return reverse('Profile:question-detail', kwargs={'pk': self.pk})
 
@@ -60,7 +61,8 @@ class Question(models.Model):
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("მომხმარებელი"))
-    question = models.ForeignKey(Question,on_delete=models.CASCADE,verbose_name=_("კითხვა"))
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name=_("კითხვა"))
+    # added_time = models.DateTimeField(auto_now_add=True, default=True)
 
     objects = LikeManager()
 

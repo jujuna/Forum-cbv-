@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect,reverse
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormMixin
-from .forms import CommentForm, QuestionForm
+from .forms import CommentForm, QuestionForm , UpdateProfileForm
 from django.views.generic.edit import FormMixin
 from User.models import User
 from django.http import HttpResponseRedirect
@@ -135,6 +135,23 @@ class UpdateQuestion(UpdateView):
     def form_valid(self, form):
         form.instance.question_update_limit()
         return super(UpdateQuestion, self).form_valid(form)
+
+class UpdateUserProfile(UpdateView):
+    model = User
+    form_class = UpdateProfileForm
+    context_object_name = "form"
+    template_name = "Profile/update_profile.html"
+    success_url = "/"
+
+    def get_context_data(self, **kwargs):
+        context = super(UpdateUserProfile, self).get_context_data(**kwargs)
+        access = User.objects.get(id=self.kwargs['pk']).update_access
+        context['access'] = access
+        return context
+    
+    def form_valid(self, form):
+        form.instance.profile_update_limit()
+        return super(UpdateUserProfile, self).form_valid(form)
 
 
 class ERROR_404_VIEW(TemplateView):

@@ -12,5 +12,6 @@ urlpatterns = [
     path('my-questions/', login_required(views.MyQuestions.as_view()), name='my-question'),
     path('top-questions/', login_required(views.TopQuestion.as_view()), name='top-question'),
     path('update/<int:pk>/', login_required(views.UpdateQuestion.as_view()), name='update-question'),
+    path('update-profile/<int:pk>/', login_required(views.UpdateUserProfile.as_view()), name='update-profile'),
 
 ]

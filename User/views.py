@@ -1,13 +1,11 @@
-from django.views.generic import TemplateView,FormView
-from .forms import UserForm,AuthenticationForm
+from django.views.generic import TemplateView, FormView
+from .forms import UserForm, AuthenticationForm
 from django.urls import reverse_lazy
-from django.contrib.auth import login,authenticate,logout
+from django.contrib.auth import login, authenticate, logout
 from django.views.generic import View
 from django.conf import settings
-from django.shortcuts import redirect,reverse
+from django.shortcuts import redirect, reverse
 from django.utils.decorators import method_decorator
-
-
 
 
 class HomePage(TemplateView):
@@ -32,7 +30,6 @@ class Registration(FormView):
     def form_valid(self, form):
         form.save(commit=True)
         return super(Registration, self).form_valid(form)
-
 
 
 class Login(FormView):
