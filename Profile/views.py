@@ -1,7 +1,7 @@
-from django.views.generic import TemplateView,FormView,ListView,DetailView,UpdateView
-from .models import Question,Comment,Like,DisLike
+from django.views.generic import TemplateView, FormView, ListView, DetailView, UpdateView
+from .models import Question, Comment, Like, DisLike, FavoriteQuestion
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import redirect,reverse
+from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormMixin
 from .forms import CommentForm, QuestionForm , UpdateProfileForm
@@ -37,7 +37,7 @@ class TopQuestion(ListView):
     context_object_name = "question"
 
     def get_queryset(self):
-        return Question.objects.all().annotate(top_q=F('point')).order_by('-top_q')
+        return Question.objects.exclude(user=self.request.user).annotate(top_q=F('point')).order_by('-top_q')
 
 
 class QuestionDetail(FormView, DetailView):
@@ -61,21 +61,25 @@ class QuestionDetail(FormView, DetailView):
     def get_context_data(self, *args, **kwargs):
         # print(Question.test(self))
         question = Question.objects.get(id=self.kwargs["pk"])
-        like_exist=Like.objects.filter(user=self.request.user, question=self.get_object())
-        dislike_exist=DisLike.objects.filter(user=self.request.user, question=self.get_object())
+        like_exist = Like.objects.filter(user=self.request.user, question=self.get_object())
+        dislike_exist = DisLike.objects.filter(user=self.request.user, question=self.get_object())
+        fav_exist = FavoriteQuestion.objects.filter(user=self.request.user, question=self.get_object())
 
         self.object=self.get_object()
         context = super(QuestionDetail, self).get_context_data(**kwargs)
+
         try:
             context['owner'] = True if question.user == self.request.user else False
             context['can_update'] = question.update_access()
             context['detail'] = question
             context['like_ex'] = like_exist
             context['dislike_ex'] = dislike_exist
+            context['fav'] = fav_exist
+
         except Http404:
             return reverse("Profile:error")
 
-        if "like" or "dislike" in self.request.GET:
+        if "like" or "dislike" or "fav" in self.request.GET:
 
             like = Like.objects.filter(user=self.request.user, question=self.get_object())
             dislike = DisLike.objects.filter(user=self.request.user, question=self.get_object())
@@ -100,6 +104,13 @@ class QuestionDetail(FormView, DetailView):
                     else:
                         DisLike.objects.create(user=self.request.user, question=self.get_object(),decrease=False)
 
+            if "fav" in self.request.GET:
+
+                if fav_exist:
+                    fav_exist.delete()
+                else:
+                    FavoriteQuestion.objects.create(user=self.request.user, question=self.get_object())
+
         return context
 
     def form_valid(self, form):
@@ -116,7 +127,7 @@ class AskQuestion(FormView):
     context_object_name = "form"
 
 
-    def get_success_url(self,):
+    def get_success_url(self):
         return reverse("Profile:question-detail", kwargs={"pk": self.pk})
 
     def form_valid(self, form):
@@ -130,7 +141,9 @@ class UpdateQuestion(UpdateView):
     form_class = QuestionForm
     context_object_name = "form"
     template_name = "Profile/edit_question.html"
-    success_url = "/"
+
+    def get_success_url(self):
+        return reverse("Profile:question-detail", kwargs={"pk": self.kwargs["pk"]})
 
     def form_valid(self, form):
         form.instance.question_update_limit()
@@ -152,6 +165,12 @@ class UpdateUserProfile(UpdateView):
     def form_valid(self, form):
         form.instance.profile_update_limit()
         return super(UpdateUserProfile, self).form_valid(form)
+
+
+class FavouriteQuestion(ListView):
+    template_name = "Profile/favourite_question.html"
+    model = FavoriteQuestion
+    context_object_name = "question"
 
 
 class ERROR_404_VIEW(TemplateView):

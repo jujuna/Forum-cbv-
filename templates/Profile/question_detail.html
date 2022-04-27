@@ -6,6 +6,13 @@
     <div class="post">
         <div class="p-6 mb-12 w-full h-auto break-all bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 border border-gray-400">
             <div class="mb-4">
+                <form>
+                    {% if fav %}
+                        <button type="submit" name="fav" class="absolute right-2 top-5 text-5xl ">&#9733;</button>
+                    {% else %}
+                        <button type="submit" name="fav" class="absolute right-2 top-5 text-5xl ">&#9734;</button>
+                    {% endif %}
+                </form>
                 <h1>{{ detail.user }}</h1>
             </div>
             <div class="mb-2 flex ">
@@ -30,7 +37,7 @@
                     <div class="count">{{ detail.point }}</div>
                 </div>
             </form>
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ detail.title }}</h5>
+            <h5 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{{ detail.title }}</h5>
             <p class="mb-4 font-normal text-gray-700 dark:text-gray-400">{{ detail.text }}</p>
         </div>
 

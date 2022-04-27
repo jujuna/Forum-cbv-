@@ -1,3 +1,5 @@
+import time
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
@@ -62,7 +64,7 @@ class Question(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("მომხმარებელი"))
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name=_("კითხვა"))
-    # added_time = models.DateTimeField(auto_now_add=True, default=True)
+    added_time = models.DateTimeField(auto_now_add=True)
 
     objects = LikeManager()
 
@@ -104,6 +106,7 @@ def delete_dislike(sender, instance, using, **kwargs):
     instance.question.point += 1
     instance.question.save()
 
+
 class Comment(models.Model):
     text = models.TextField( verbose_name=_("კომენტარი"))
     user = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name=_("მომხმარებელი"))
@@ -112,3 +115,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.question.id) + " --> " + self.text
+
+
+class FavoriteQuestion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("მომხმარებელი"))
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name=_("კითხვა"), related_name="favorite_question")
+
+    def __str__(self):
+        return self.user.username + " --> " + self.question.title
