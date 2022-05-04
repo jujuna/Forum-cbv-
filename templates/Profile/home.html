@@ -2,6 +2,14 @@
 {% block content %}
 {% include "./navbar.html" %}
 
+    <div class="news mt-12 ml-4 h-auto w-80 bg-red-200 fixed bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+        <p class="text-center mb-4">უახლესი შეკითხვები:</p>
+        {% for q in new %}
+            <a href="{{ q.get_absolute_url }}"><p class="mb-8 ml-4 mr-4 border-b-2 border-sky-500 cursor-pointer break-words">{{ q }}</p></a>
+        {% endfor %}
+    </div>
+
+
 <div class="relative pl-96 ml-28 mt-12">
     {% for object in question %}
     <div class="p-6 mb-12 w-7/12 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">

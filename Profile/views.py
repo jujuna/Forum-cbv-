@@ -12,6 +12,8 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.db.models import Count, F
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+
 
 
 class ProfileHome(ListView):
@@ -21,6 +23,13 @@ class ProfileHome(ListView):
 
     def get_queryset(self):
         return Question.objects.exclude(user=self.request.user)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProfileHome, self).get_context_data(**kwargs)
+        new = Question.objects.exclude(user=self.request.user)[:5]
+        context['new'] = new
+        return context
+
 
 
 class MyQuestions(ListView):
@@ -67,6 +76,14 @@ class QuestionDetail(FormView, DetailView):
 
         self.object=self.get_object()
         context = super(QuestionDetail, self).get_context_data(**kwargs)
+        try:
+            l = Like.objects.get(question=question)
+        except ObjectDoesNotExist:
+            print("like does not exis!")
+        try:
+            d = DisLike.objects.get(question=question)
+        except ObjectDoesNotExist:
+            print("dislike does not exis!")
 
         try:
             context['owner'] = True if question.user == self.request.user else False
@@ -75,6 +92,8 @@ class QuestionDetail(FormView, DetailView):
             context['like_ex'] = like_exist
             context['dislike_ex'] = dislike_exist
             context['fav'] = fav_exist
+            context['activity'] = 1
+
 
         except Http404:
             return reverse("Profile:error")
