@@ -2,10 +2,16 @@
 {% block content %}
 {% include "./navbar.html" %}
 
-<div id="activity" class="px-48 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 border border-gray-400">
-    <p class="bg-yellow-100 float-center"  onclick="hide()" id="test">test</p>
-
+<div id="activity" class="bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 border border-gray-400">
+    <p class="float-right p-2 mb-4 cursor-pointer" onclick="hide()" id="test">&#10006;</p>
+    <div class="likes relative top-8 p-4">
+        {% for like in likes %}
+        <p><span class="text-lg text-blue-500" >{{ like.user }} </span>  <span>{% if like.like_dislike %} <span class="text-green-600 text-xl ml-4">+1</span>  {% else %} <span class="text-red-600 text-lg ml-4">-1</span> {% endif %}</span> </p>
+        <hr>
+        {% endfor %}
+    </div>
 </div>
+
 <div class="relative pt-6  w-7/12 left-80 ">
     <div class="post">
         <div class="p-6 mb-12 pb-16 w-full h-auto break-all bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 border border-gray-400">
@@ -39,7 +45,7 @@
                     <button type="submit" name="dislike" class="block mb-2 increment down "></button>
                     {% endif %}
 
-                    <div class="count" onclick="t()">{{ detail.point }}</div>
+                    <div class="count">{{ activity }}</div>
                 </div>
                 <button type="button"  onclick="show()" class="relative bottom-4  h-8 w-28 px-5  text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">აქტივობა</button>
             </form>
@@ -128,7 +134,7 @@ function show() {
 }
 
 function hide() {
-   document.getElementById('test').style.display = "none";
+   document.getElementById('activity').style.display = "none";
 
 }
 </script>
@@ -136,10 +142,10 @@ function hide() {
 <style>
 #activity{
   display:none;
-  width:10%;
-  height:48%;
+  width:20%;
+  height:24%;
   position: absolute;
-  top:21%;
+  top:11%;
   z-index:1;
   left: 82%;
   margin-left: -100px;

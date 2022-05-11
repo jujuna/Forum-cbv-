@@ -14,5 +14,6 @@ urlpatterns = [
     path('update/<int:pk>/', login_required(views.UpdateQuestion.as_view()), name='update-question'),
     path('update-profile/<int:pk>/', login_required(views.UpdateUserProfile.as_view()), name='update-profile'),
     path('favourite/', login_required(views.FavouriteQuestion.as_view()), name='fav'),
+    path('searched/', login_required(views.SearchedResult.as_view()), name='search'),
 
 ]

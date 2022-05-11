@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView, FormView, ListView, DetailView, UpdateView
-from .models import Question, Comment, Like, DisLike, FavoriteQuestion
+from .models import Question, Comment, FavoriteQuestion, LikeOrDislike
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
@@ -13,6 +13,7 @@ from django.http import Http404
 from django.db.models import Count, F
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q,Count
 
 
 
@@ -68,60 +69,54 @@ class QuestionDetail(FormView, DetailView):
         return self.request.path
 
     def get_context_data(self, *args, **kwargs):
-        # print(Question.test(self))
         question = Question.objects.get(id=self.kwargs["pk"])
-        like_exist = Like.objects.filter(user=self.request.user, question=self.get_object())
-        dislike_exist = DisLike.objects.filter(user=self.request.user, question=self.get_object())
+        like_exist = LikeOrDislike.objects.filter(user=self.request.user, question=self.get_object(), like_dislike=1)
+        dislike_exist = LikeOrDislike.objects.filter(user=self.request.user, question=self.get_object(), like_dislike=0)
         fav_exist = FavoriteQuestion.objects.filter(user=self.request.user, question=self.get_object())
+        count = LikeOrDislike.objects.filter(question=1).aggregate(c=Count("like_dislike", filter=Q(like_dislike=1)) - Count("like_dislike", filter=Q(like_dislike=0)))
+        likes = LikeOrDislike.objects.filter(question=1)
 
         self.object=self.get_object()
         context = super(QuestionDetail, self).get_context_data(**kwargs)
-        try:
-            l = Like.objects.get(question=question)
-        except ObjectDoesNotExist:
-            print("like does not exis!")
-        try:
-            d = DisLike.objects.get(question=question)
-        except ObjectDoesNotExist:
-            print("dislike does not exis!")
 
         try:
             context['owner'] = True if question.user == self.request.user else False
             context['can_update'] = question.update_access()
             context['detail'] = question
             context['like_ex'] = like_exist
-            context['dislike_ex'] = dislike_exist
             context['fav'] = fav_exist
-            context['activity'] = 1
-
-
+            context['activity'] = count['c']
+            context['likes'] = likes
         except Http404:
             return reverse("Profile:error")
 
         if "like" or "dislike" or "fav" in self.request.GET:
-
-            like = Like.objects.filter(user=self.request.user, question=self.get_object())
-            dislike = DisLike.objects.filter(user=self.request.user, question=self.get_object())
+            pass
 
             if "like" in self.request.GET:
 
-                    if like:
-                        like.delete()
-                    elif dislike:
-                        Like.objects.create(user=self.request.user, question=self.get_object(), decrease=True)
-                        DisLike.objects.filter(user=self.request.user, question=self.get_object()).delete()
-                    else:
-                        Like.objects.create(user=self.request.user, question=self.get_object(),decrease=False)
+                if dislike_exist:
+                    dislike_exist.delete()
+                    LikeOrDislike.objects.create(question=self.get_object(), user=self.request.user, like_dislike=1)
+
+                elif like_exist:
+                    like_exist.delete()
+
+                else:
+                    LikeOrDislike.objects.create(question=self.get_object(), user=self.request.user, like_dislike=1)
 
             if "dislike" in self.request.GET:
 
-                    if dislike:
-                        dislike.delete()
-                    elif like:
-                        DisLike.objects.create(user=self.request.user, question=self.get_object(), decrease=True)
-                        Like.objects.filter(user=self.request.user, question=self.get_object()).delete()
-                    else:
-                        DisLike.objects.create(user=self.request.user, question=self.get_object(),decrease=False)
+                if like_exist:
+                    like_exist.delete()
+                    LikeOrDislike.objects.create(question=self.get_object(), user=self.request.user, like_dislike=0)
+
+                elif dislike_exist:
+                    dislike_exist.delete()
+
+                else:
+                    LikeOrDislike.objects.create(question=self.get_object(), user=self.request.user, like_dislike=0)
+
 
             if "fav" in self.request.GET:
 
@@ -185,11 +180,21 @@ class UpdateUserProfile(UpdateView):
         form.instance.profile_update_limit()
         return super(UpdateUserProfile, self).form_valid(form)
 
-
 class FavouriteQuestion(ListView):
     template_name = "Profile/favourite_question.html"
     model = FavoriteQuestion
     context_object_name = "question"
+
+
+class SearchedResult(ListView):
+    template_name = "Profile/searched.html"
+    model = Question
+    context_object_name = "question"
+
+    def get_queryset(self):
+        q = Question.objects.filter(title__icontains=self.request.GET.get('search'))
+        return q
+
 
 
 class ERROR_404_VIEW(TemplateView):
